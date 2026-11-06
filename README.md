@@ -73,4 +73,8 @@ gh run download RUN_ID --name movie-rating-prediction
 
 ## Recorded execution
 
-The workflow is configured to run on every push, including the working branch, and on pull requests targeting `main`. After the first GitHub Actions run, this section records its actual run link, conclusion, test count, and prediction/holdout metrics; generated results are not fabricated or inferred from local runs.
+The workflow runs on every push and on pull requests targeting `main`.
+
+**Verified GitHub Actions run:** [Movie rating CI/CD #42169801929](https://github.com/mahidhar-lab/mlops-internal/actions/runs/42169801929) — triggered by push on 2026-11-06, commit `102ed27863d78814b25c7a6cd212b7482453c840`, conclusion **success**. The Actions job reports successful dependency installation, application-test step, prediction smoke test, and prediction-artifact upload.
+
+**Reproducible local execution:** `python -m pytest -q` → **2 passed**. The prediction CLI completed on all 480 data rows; holdout comprised 384 train / 96 test rows; MAE **0.5606**, R² **0.6752**. For the sample Drama input (145 min, INR 50 crore budget, popularity 70, 2025, Streaming, 10,000 reviews), estimated rating was **6.42 / 10**. These metrics are the local execution output; the Actions run verified that its own smoke-test and artifact-upload steps passed.
