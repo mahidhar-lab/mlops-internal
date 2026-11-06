@@ -1,0 +1,53 @@
+name: Movie rating CI/CD
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-predict:
+    name: Test, train, and smoke-test prediction
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Run application tests
+        run: python -m pytest -q
+
+      - name: Run prediction smoke test
+        run: >-
+          python -m app.predict
+          --data data/Section14_Q4_Movie_Rating_CICD.csv
+          --genre Drama
+          --duration 145
+          --budget 50
+          --popularity 70
+          --year 2025
+          --platform Streaming
+          --reviews 10000
+          --output artifacts/prediction.json
+
+      - name: Upload prediction result
+        uses: actions/upload-artifact@v4
+        with:
+          name: movie-rating-prediction
+          path: artifacts/prediction.json
+          if-no-files-found: error
+          retention-days: 14
